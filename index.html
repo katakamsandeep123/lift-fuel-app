@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#10131a">
+<meta name="description" content="Personal workout, diet, protein and weight tracker">
+<link rel="manifest" href="manifest.json">
+<title>Lift & Fuel</title>
+<style>
+:root{--bg:#10131a;--panel:#191e29;--panel2:#202737;--text:#f4f6fb;--muted:#aab3c5;--accent:#9af06a;--accent2:#d5ffbd;--border:#30394b;--danger:#ff9c9c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.45}
+header{padding:24px 18px 16px;background:linear-gradient(145deg,#202a35,#10131a 75%);border-bottom:1px solid var(--border)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px}.brand{font-weight:900;letter-spacing:.3px;font-size:21px}.brand span{color:var(--accent)}.pill{border:1px solid #526344;color:var(--accent2);border-radius:999px;padding:6px 10px;font-size:12px}
+h1{font-size:26px;line-height:1.12;margin:22px 0 8px}header p{color:var(--muted);margin:0;font-size:14px}
+main{max-width:760px;margin:auto;padding:16px 14px 100px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}.stat,.card{background:var(--panel);border:1px solid var(--border);border-radius:17px;padding:14px}.stat small{color:var(--muted);display:block;font-size:11px}.stat strong{font-size:21px;display:block;margin-top:5px}.stat em{font-style:normal;font-size:11px;color:var(--accent)}
+nav{display:flex;gap:8px;overflow:auto;margin:14px 0 18px;padding-bottom:2px}nav button{flex:1;min-width:max-content;background:var(--panel);border:1px solid var(--border);color:var(--muted);padding:11px 13px;border-radius:12px;font-weight:700}nav button.active{background:var(--accent);color:#14200e;border-color:var(--accent)}
+h2{font-size:19px;margin:4px 0 12px}h3{font-size:15px;margin:0 0 7px}.muted{color:var(--muted);font-size:13px}.row{display:flex;justify-content:space-between;gap:12px;align-items:center}.stack{display:grid;gap:10px}.section{margin-bottom:18px}.exercise,.meal{display:flex;gap:10px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--border)}.exercise:last-child,.meal:last-child{border-bottom:0}.exercise input,.meal input{width:19px;height:19px;accent-color:var(--accent);margin-top:2px;flex-shrink:0}.exercise label,.meal label{flex:1}.exercise b,.meal b{display:block;font-size:14px}.exercise small,.meal small{display:block;color:var(--muted);font-size:12px;margin-top:2px}.tag{font-size:11px;background:var(--panel2);color:var(--accent2);padding:5px 8px;border-radius:8px;white-space:nowrap}
+button,.btn{cursor:pointer}.primary{background:var(--accent);border:0;color:#14200e;font-weight:800;border-radius:12px;padding:12px 14px}.secondary{background:var(--panel2);border:1px solid var(--border);color:var(--text);font-weight:700;border-radius:12px;padding:11px 12px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.hidden{display:none!important}.progress{height:9px;background:#30394b;border-radius:99px;overflow:hidden;margin:10px 0}.progress div{height:100%;background:var(--accent);width:0;transition:width .2s}.inputrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.inputrow input,.inputrow select{background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:11px;min-width:0}.inputrow input{width:110px}.meal-time{font-size:12px;color:var(--accent);font-weight:800;min-width:76px;padding-top:2px}.notice{padding:12px;border:1px solid #526344;background:#1c2a1b;border-radius:12px;color:#d9f6cf;font-size:13px}.warning{padding:12px;border:1px solid #68583c;background:#2b251b;border-radius:12px;color:#ffe1aa;font-size:12px}.daygrid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.daygrid button{padding:9px 0;background:var(--panel2);border:1px solid var(--border);border-radius:9px;color:var(--muted);font-size:12px}.daygrid button.selected{background:var(--accent);color:#14200e;font-weight:800}.foot{text-align:center;color:var(--muted);font-size:11px;padding:18px}
+@media(min-width:600px){main{padding:22px 20px 100px}.stat strong{font-size:25px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="top"><div class="brand">LIFT <span>&</span> FUEL</div><div class="pill">60 kg · Muscle gain</div></div>
+  <h1 id="greeting">Build consistency.<br>Fuel your progress.</h1>
+  <p id="todayline">Your daily training and nutrition dashboard.</p>
+</header>
+<main>
+  <div class="stats">
+    <div class="stat"><small>WEIGHT</small><strong id="weightStat">60.0 kg</strong><em>Goal: 75 kg</em></div>
+    <div class="stat"><small>PROTEIN TODAY</small><strong id="proteinStat">0 g</strong><em>Target: 115 g</em></div>
+    <div class="stat"><small>CALORIES TODAY</small><strong id="calStat">0</strong><em>Target: 2,600</em></div>
+  </div>
+  <nav>
+    <button class="active" data-tab="today">Today</button>
+    <button data-tab="workout">Workout</button>
+    <button data-tab="diet">Diet & reminders</button>
+    <button data-tab="progress">Progress</button>
+  </nav>
+
+  <section id="tab-today">
+    <div class="card section">
+      <div class="row"><div><h2 id="todayWorkoutTitle">Today's workout</h2><div class="muted" id="todayWorkoutDesc"></div></div><span class="tag" id="dayTag"></span></div>
+      <div class="progress"><div id="workoutProgress"></div></div>
+      <div class="row"><small class="muted" id="workoutCount">0 exercises completed</small><button class="secondary" onclick="showTab('workout')">Open workout →</button></div>
+    </div>
+    <div class="card section">
+      <div class="row"><div><h2>Today's food plan</h2><div class="muted">Tick meals as you finish them.</div></div><span class="tag" id="dietStyle">Vegetarian</span></div>
+      <div id="todayMeals"></div>
+      <div class="progress"><div id="mealProgress"></div></div>
+      <small class="muted" id="mealCount">0 meals completed</small>
+    </div>
+    <div class="card section">
+      <h2>Quick add nutrition</h2>
+      <div class="muted">Add food you actually ate. Estimates can vary by portion and brand.</div>
+      <div class="inputrow" style="margin-top:12px">
+        <input id="foodName" placeholder="Food item" style="flex:1;min-width:120px">
+        <input id="foodProtein" type="number" min="0" placeholder="Protein g">
+        <input id="foodCalories" type="number" min="0" placeholder="kcal">
+        <button class="primary" onclick="addFood()">Add</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="tab-workout" class="hidden">
+    <div class="card section">
+      <h2>This week's split</h2><div class="daygrid" id="dayPicker"></div>
+      <div class="row" style="margin-top:14px"><div><h2 id="workoutTitle"></h2><div class="muted" id="workoutDesc"></div></div><span class="tag" id="workoutIntensity">Normal</span></div>
+      <div id="exerciseList"></div>
+      <div class="actions"><button class="secondary" onclick="resetWorkout()">Reset today's checklist</button><button class="primary" onclick="showTab('today')">Done</button></div>
+    </div>
+    <div class="warning">Training tip: warm up for 5–10 minutes, use controlled technique, and keep 1–3 reps in reserve on most sets. Stop any movement that causes sharp pain.</div>
+  </section>
+
+  <section id="tab-diet" class="hidden">
+    <div class="card section">
+      <h2>Meal schedule</h2>
+      <p class="muted">Suggested times based on a morning gym routine. Change them to match your day.</p>
+      <div id="dietList"></div>
+      <div class="actions"><button class="primary" onclick="requestNotifications()">Enable reminders while app is open</button><button class="secondary" onclick="downloadCalendar()">Export reminders to calendar (.ics)</button></div>
+      <p class="muted" id="notificationStatus"></p>
+    </div>
+    <div class="warning">Important: Android browser apps cannot reliably schedule alarms in the background on their own. For dependable reminders when this app is closed, export the schedule and import the .ics file into Google Calendar, then enable notifications there. App-open notifications require the app to stay open.</div>
+    <div class="card section">
+      <h2>Daily targets</h2>
+      <div class="inputrow"><label class="muted">Protein (g)</label><input id="targetProtein" type="number" value="115"><label class="muted">Calories</label><input id="targetCalories" type="number" value="2600"><button class="secondary" onclick="saveTargets()">Save targets</button></div>
+      <p class="muted">Start around 2,500–2,700 kcal and 110–120 g protein, then adjust based on your average weight trend and training recovery.</p>
+    </div>
+  </section>
+
+  <section id="tab-progress" class="hidden">
+    <div class="card section">
+      <h2>Log today's weight</h2>
+      <div class="inputrow"><input id="weightInput" type="number" step="0.1" value="60" aria-label="Weight in kilograms"><span class="muted">kg</span><button class="primary" onclick="saveWeight()">Save weight</button></div>
+      <p class="muted">Weigh in under similar conditions, ideally in the morning. Compare weekly averages, not single-day changes.</p>
+    </div>
+    <div class="card section">
+      <h2>Nutrition log today</h2><div id="foodLog"></div><div class="actions"><button class="secondary" onclick="resetFoodLog()">Clear today's food log</button></div>
+    </div>
+    <div class="card section">
+      <h2>Recent weigh-ins</h2><div id="weightHistory" class="muted">No weigh-ins logged yet.</div>
+    </div>
+  </section>
+  <div class="foot">Lift & Fuel · Personal tracker · Your data stays in this browser on this device.</div>
+</main>
+<script>
+const split = [
+ {day:"Monday",short:"Mon",title:"Chest + Triceps",desc:"Push day · controlled pressing",items:[["Barbell bench press","3 × 6–10"],["Incline dumbbell press","3 × 8–12"],["Machine chest press","2 × 10–12"],["Cable chest fly","2 × 12–15"],["Triceps pushdowns","3 × 10–15"],["Overhead triceps extension","2 × 10–15"]]},
+ {day:"Tuesday",short:"Tue",title:"Back + Biceps",desc:"Pull day · width and thickness",items:[["Lat pulldown","3 × 8–12"],["Chest-supported row","3 × 8–12"],["Seated cable row","2 × 10–12"],["Straight-arm pulldown","2 × 12–15"],["Dumbbell biceps curls","3 × 10–12"],["Hammer curls","2 × 10–12"]]},
+ {day:"Wednesday",short:"Wed",title:"Legs + Abs",desc:"Lower body and core",items:[["Squat or leg press","3 × 8–12"],["Romanian deadlift","3 × 8–10"],["Leg extensions","2 × 12–15"],["Seated leg curls","3 × 10–15"],["Calf raises","3 × 12–15"],["Cable crunches","3 × 12–15"],["Plank","3 × 30–60 sec"]]},
+ {day:"Thursday",short:"Thu",title:"Shoulders",desc:"Side and rear delts for shoulder width",items:[["Seated dumbbell shoulder press","3 × 8–12"],["Dumbbell lateral raises","4 × 12–15"],["Reverse pec deck","3 × 12–15"],["Cable lateral raises","2 × 12–15"],["Face pulls","2 × 12–15"]]},
+ {day:"Friday",short:"Fri",title:"Chest + Back",desc:"Upper-body thickness and width",items:[["Incline dumbbell press","3 × 8–12"],["Machine chest press","2 × 10–12"],["Lat pulldown","3 × 10–12"],["Seated cable row","3 × 10–12"],["Cable chest fly","2 × 12–15"],["Straight-arm pulldown","2 × 12–15"]]},
+ {day:"Saturday",short:"Sat",title:"Arms + Abs",desc:"Biceps, triceps and core",items:[["EZ-bar curls","3 × 8–12"],["Incline dumbbell curls","2 × 10–12"],["Hammer curls","2 × 10–12"],["Triceps pushdowns","3 × 10–12"],["Overhead triceps extension","2 × 10–15"],["Reverse curls","2 × 12–15"],["Hanging knee raises","3 × 10–15"],["Plank","3 × 30–60 sec"]]},
+ {day:"Sunday",short:"Sun",title:"Rest day",desc:"Recovery, walking, and meal prep",items:[["Easy walk (optional)","15–30 min"],["Gentle mobility (optional)","5–10 min"]]}
+];
+const meals = [
+ {time:"5:15 AM",hh:5,mm:15,name:"Pre-workout",veg:"1 banana + water",nonveg:"1 banana + water",p:1,c:105},
+ {time:"7:15 AM",hh:7,mm:15,name:"Post-workout",veg:"1 scoop whey + 3–5 g creatine (optional)",nonveg:"1 scoop whey + 3–5 g creatine (optional)",p:24,c:130},
+ {time:"8:30 AM",hh:8,mm:30,name:"Breakfast",veg:"100 g oats + 250 ml milk + 1 tbsp peanut butter",nonveg:"100 g oats + 250 ml milk",p:22,c:600},
+ {time:"11:30 AM",hh:11,mm:30,name:"Snack",veg:"200 g curd + fruit",nonveg:"3 eggs + fruit",p:7,c:220},
+ {time:"1:30 PM",hh:13,mm:30,name:"Lunch",veg:"Rice + 1 cup dal + vegetables",nonveg:"Rice + 150 g cooked chicken + vegetables",p:25,c:650},
+ {time:"5:00 PM",hh:17,mm:0,name:"Evening snack",veg:"50 g dry soya chunks cooked, or roasted chana",nonveg:"Curd + peanuts or roasted chana",p:20,c:300},
+ {time:"8:30 PM",hh:20,mm:30,name:"Dinner",veg:"100 g paneer + 2 chapatis + vegetables",nonveg:"Rice/chapati + dal + vegetables",p:24,c:550}
+];
+const $=id=>document.getElementById(id);
+const keyDate=()=>new Date().toLocaleDateString('en-CA');
+const dateKey=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+const storeKey=(k)=>`${k}_${dateKey()}`;
+let chosenDay=(new Date().getDay()+6)%7;
+let data=JSON.parse(localStorage.getItem("liftFuelData")||"{}");
+function saveData(){localStorage.setItem("liftFuelData",JSON.stringify(data))}
+function dayData(day=chosenDay){const k=storeKey("workout_"+day);if(!data[k])data[k]={};return data[k]}
+function todayMealData(){const k=storeKey("meals");if(!data[k])data[k]={};return data[k]}
+function foodLog(){const k=storeKey("food");if(!data[k])data[k]=[];return data[k]}
+function isVegDay(){return [0,5].includes(new Date().getDay())}
+function renderDayPicker(){ $("dayPicker").innerHTML=split.map((d,i)=>`<button class="${i===chosenDay?'selected':''}" onclick="selectDay(${i})">${d.short}</button>`).join("")}
+function renderWorkout(day=chosenDay){
+ const d=split[day];$("workoutTitle").textContent=d.title;$("workoutDesc").textContent=d.desc;$("workoutIntensity").textContent=day===6?"Recovery":"Normal";
+ const checks=dayData(day);
+ $("exerciseList").innerHTML=d.items.map((it,i)=>`<div class="exercise"><input type="checkbox" id="ex${i}" ${checks[i]?'checked':''} onchange="toggleExercise(${day},${i},this.checked)"><label for="ex${i}"><b>${it[0]}</b><small>${it[1]}</small></label></div>`).join("");
+ const done=d.items.filter((_,i)=>checks[i]).length;$("workoutProgress").style.width=(done/d.items.length*100)+"%";$("workoutCount").textContent=`${done} of ${d.items.length} exercises completed`;
+}
+function selectDay(i){chosenDay=i;renderDayPicker();renderWorkout(i)}
+function toggleExercise(day,i,v){dayData(day)[i]=v;saveData();renderWorkout(day);renderToday()}
+function resetWorkout(){data[storeKey("workout_"+chosenDay)]={};saveData();renderWorkout();renderToday()}
+function renderDietList(){
+ const veg=isVegDay();
+ $("dietStyle").textContent=veg?"Vegetarian day":"Egg/chicken options";
+ $("dietList").innerHTML=meals.map((m,i)=>`<div class="meal"><div class="meal-time">${m.time}</div><input type="checkbox" id="meal${i}" ${todayMealData()[i]?'checked':''} onchange="toggleMeal(${i},this.checked)"><label for="meal${i}"><b>${m.name}</b><small>${veg?m.veg:m.nonveg}</small></label><span class="tag">~${m.p} g</span></div>`).join("");
+}
+function toggleMeal(i,v){todayMealData()[i]=v;saveData();renderToday()}
+function renderToday(){
+ const d=new Date();const idx=(d.getDay()+6)%7;const workout=split[idx];const done=Object.values(dayData(idx)).filter(Boolean).length;
+ $("todayWorkoutTitle").textContent=workout.title;$("todayWorkoutDesc").textContent=workout.desc;$("dayTag").textContent=workout.day;
+ $("workoutProgress").style.width=(done/workout.items.length*100)+"%";$("workoutCount").textContent=`${done} of ${workout.items.length} exercises completed`;
+ const md=todayMealData(), mdone=Object.values(md).filter(Boolean).length;
+ $("mealProgress").style.width=(mdone/meals.length*100)+"%";$("mealCount").textContent=`${mdone} of ${meals.length} meals checked`;
+ $("todayMeals").innerHTML=meals.map((m,i)=>`<div class="meal"><div class="meal-time">${m.time}</div><input type="checkbox" ${md[i]?'checked':''} onchange="toggleMeal(${i},this.checked)"><label><b>${m.name}</b><small>${isVegDay()?m.veg:m.nonveg}</small></label></div>`).join("");
+ const foods=foodLog();const p=foods.reduce((s,x)=>s+(+x.p||0),0),c=foods.reduce((s,x)=>s+(+x.c||0),0);
+ $("proteinStat").textContent=Math.round(p)+" g";$("calStat").textContent=Math.round(c).toLocaleString();
+ $("weightStat").textContent=(data.currentWeight||60).toFixed(1)+" kg";
+}
+function addFood(){
+ const name=$("foodName").value.trim(),p=+$("foodProtein").value||0,c=+$("foodCalories").value||0;
+ if(!name){alert("Enter a food item first.");return}
+ foodLog().push({name,p,c});saveData();$("foodName").value="";$("foodProtein").value="";$("foodCalories").value="";renderToday();renderFoodLog();
+}
+function renderFoodLog(){const arr=foodLog();$("foodLog").innerHTML=arr.length?arr.map((f,i)=>`<div class="meal"><label><b>${f.name}</b><small>${f.p} g protein · ${f.c} kcal</small></label><button class="secondary" onclick="removeFood(${i})">Remove</button></div>`).join(""):'<p class="muted">No food logged today. Use Quick add on the Today tab.</p>'}
+function removeFood(i){foodLog().splice(i,1);saveData();renderFoodLog();renderToday()}
+function resetFoodLog(){if(confirm("Clear today's food log?")){data[storeKey("food")]=[];saveData();renderFoodLog();renderToday()}}
+function saveWeight(){const w=+$("weightInput").value;if(!w||w<25||w>300){alert("Enter a valid weight in kg.");return}data.currentWeight=w;data.weights=data.weights||[];data.weights.push({date:dateKey(),weight:w});saveData();renderToday();renderWeights()}
+function renderWeights(){const arr=(data.weights||[]).slice(-10).reverse();$("weightHistory").innerHTML=arr.length?arr.map(x=>`<div class="row" style="padding:8px 0;border-bottom:1px solid var(--border)"><span>${x.date}</span><b>${x.weight.toFixed(1)} kg</b></div>`).join(""):'No weigh-ins logged yet.'}
+function saveTargets(){const p=+$("targetProtein").value,c=+$("targetCalories").value;data.targets={p:p||115,c:c||2600};saveData();alert("Targets saved on this device.")}
+function showTab(tab){document.querySelectorAll('main section[id^="tab-"]').forEach(s=>s.classList.add('hidden'));$("tab-"+tab).classList.remove('hidden');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));if(tab==="workout"){chosenDay=(new Date().getDay()+6)%7;renderDayPicker();renderWorkout()}if(tab==="diet"){renderDietList()}if(tab==="progress"){renderFoodLog();renderWeights()}}
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab)));
+async function requestNotifications(){
+ if(!("Notification" in window)){alert("Notifications aren't supported in this browser. Use the calendar export for reminders.");return}
+ const perm=await Notification.requestPermission();
+ $("notificationStatus").textContent=perm==="granted"?"Notifications enabled while this app is open. Keep this page open for in-app reminders; use calendar export for reliable background alerts.":"Notifications were not enabled. You can still export reminders to your calendar.";
+ if(perm==="granted"){new Notification("Lift & Fuel reminders enabled",{body:"Meal reminders will appear while this app remains open."});startReminderLoop()}
+}
+let notified=new Set();
+function startReminderLoop(){
+ setInterval(()=>{
+  const now=new Date(),k=`${dateKey()}-${now.getHours()}-${now.getMinutes()}`;
+  meals.forEach(m=>{if(now.getHours()===m.hh&&now.getMinutes()===m.mm&&!notified.has(k+m.name)){notified.add(k+m.name);if(Notification.permission==="granted")new Notification(`Time for ${m.name}`,{body:isVegDay()?m.veg:m.nonveg})}});
+  if(now.getHours()===6&&now.getMinutes()===0&&!notified.has(k+"workout")){notified.add(k+"workout");if(Notification.permission==="granted")new Notification("Gym time 💪",{body:split[(now.getDay()+6)%7].title})}
+ },15000)
+}
+function downloadCalendar(){
+ const esc=s=>s.replace(/\\/g,"\\\\").replace(/,/g,"\\,").replace(/;/g,"\\;").replace(/\n/g,"\\n");
+ const lines=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Lift and Fuel//Fitness Reminders//EN","CALSCALE:GREGORIAN"];
+ const days=["MO","TU","WE","TH","FR","SA","SU"];
+ meals.forEach((m,i)=>{
+  const start=new Date();start.setHours(m.hh,m.mm,0,0);
+  const hh=String(m.hh).padStart(2,'0'),mm=String(m.mm).padStart(2,'0');
+  lines.push("BEGIN:VEVENT",`UID:liftfuel-meal-${i}@local`,`DTSTART;TZID=Asia/Kolkata:${dateKey().replaceAll("-","")}T${hh}${mm}00`,`DURATION:PT10M`,`RRULE:FREQ=DAILY`,`SUMMARY:${esc("Meal reminder: "+m.name)}`,`DESCRIPTION:${esc(m.veg+" | "+m.nonveg)}`,"BEGIN:VALARM","TRIGGER:-PT0M","ACTION:DISPLAY",`DESCRIPTION:${esc("Time for "+m.name)}`,"END:VALARM","END:VEVENT");
+ });
+ lines.push("BEGIN:VEVENT","UID:liftfuel-workout@local",`DTSTART;TZID=Asia/Kolkata:${dateKey().replaceAll("-","")}T060000`,`DURATION:PT60M`,`RRULE:FREQ=WEEKLY`,`SUMMARY:Gym workout reminder`,`DESCRIPTION:Open Lift & Fuel to see today's split`,"BEGIN:VALARM","TRIGGER:-PT0M","ACTION:DISPLAY","DESCRIPTION:Gym time","END:VALARM","END:VEVENT","END:VCALENDAR");
+ const blob=new Blob([lines.join("\r\n")],{type:"text/calendar;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="lift-fuel-reminders.ics";a.click();URL.revokeObjectURL(url);
+}
+function setup(){
+ const d=new Date();$("todayline").textContent=d.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"})+" · Keep your plan simple and consistent.";
+ $("greeting").innerHTML=`Build consistency.<br>Fuel your progress.`;
+ if(data.targets){$("targetProtein").value=data.targets.p;$("targetCalories").value=data.targets.c}
+ $("weightInput").value=data.currentWeight||60;
+ chosenDay=(d.getDay()+6)%7;renderDayPicker();renderWorkout();renderDietList();renderToday();renderFoodLog();renderWeights();
+ if("serviceWorker" in navigator && location.protocol.startsWith("http"))navigator.serviceWorker.register("sw.js").catch(()=>{});
+ if(Notification.permission==="granted")startReminderLoop();
+}
+setup();
+</script>
+</body>
+</html>

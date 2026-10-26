@@ -1,0 +1,10 @@
+{
+  "name": "Lift & Fuel - Gym and Diet Tracker",
+  "short_name": "Lift & Fuel",
+  "description": "Personal workout split, meal schedule, protein and weight tracker.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#10131a",
+  "theme_color": "#10131a",
+  "icons": []
+}
